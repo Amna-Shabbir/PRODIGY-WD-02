@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stopwatch</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="stopwatch">
+        <div id="display">00:00:00</div>
+        <div class="controls">
+            <button id="start">Start</button>
+            <button id="pause">Pause</button>
+            <button id="reset">Reset</button>
+            <button id="lap">Lap</button>
+        </div>
+        <ul id="laps"></ul>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
+// css
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f5f5f5;
+}
+
+.stopwatch {
+    text-align: center;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+#display {
+    font-size: 2em;
+    margin-bottom: 20px;
+}
+
+.controls button {
+    margin: 5px;
+    padding: 10px 20px;
+    font-size: 1em;
+    cursor: pointer;
+}
+
+#laps {
+    margin-top: 20px;
+    padding: 0;
+    list-style: none;
+}
+//java
+let startTime, elapsedTime = 0, timerInterval;
+
+function timeToString(time) {
+    let diffInHrs = time / 3600000;
+    let hh = Math.floor(diffInHrs);
+
+    let diffInMin = (diffInHrs - hh) * 60;
+    let mm = Math.floor(diffInMin);
+
+    let diffInSec = (diffInMin - mm) * 60;
+    let ss = Math.floor(diffInSec);
+
+    let diffInMs = (diffInSec - ss) * 1000;
+    let ms = Math.floor(diffInMs);
+
+    let formattedMM = mm.toString().padStart(2, "0");
+    let formattedSS = ss.toString().padStart(2, "0");
+    let formattedMS = ms.toString().padStart(2, "0");
+
+    return `${formattedMM}:${formattedSS}:${formattedMS}`;
+}
+
+function start() {
+    startTime = Date.now() - elapsedTime;
+    timerInterval = setInterval(() => {
+        elapsedTime = Date.now() - startTime;
+        document.getElementById("display").innerHTML = timeToString(elapsedTime);
+    }, 10);
+    showButton("PAUSE");
+}
+
+function pause() {
+    clearInterval(timerInterval);
+    showButton("PLAY");
+}
+
+function reset() {
+    clearInterval(timerInterval);
+    document.getElementById("display").innerHTML = "00:00:00";
+    elapsedTime = 0;
+    showButton("PLAY");
+    document.getElementById("laps").innerHTML = "";
+}
+
+function lap() {
+    let lapTime = timeToString(elapsedTime);
+    let lapElement = document.createElement("li");
+    lapElement.innerText = lapTime;
+    document.getElementById("laps").appendChild(lapElement);
+}
+
+function showButton(buttonKey) {
+    const buttonToShow = buttonKey === "PLAY" ? "start" : "pause";
+    const buttonToHide = buttonKey === "PLAY" ? "pause" : "start";
+    document.getElementById(buttonToShow).style.display = "block";
+    document.getElementById(buttonToHide).style.display = "none";
+}
+
+document.getElementById("start").addEventListener("click", start);
+document.getElementById("pause").addEventListener("click", pause);
+document.getElementById("reset").addEventListener("click", reset);
+document.getElementById("lap").addEventListener("click", lap);
+
